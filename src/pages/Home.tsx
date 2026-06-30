@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, TrendingUp, Shield, Zap } from 'lucide-react';
+import { ArrowRight, TrendingUp, Shield, Zap, Bot } from 'lucide-react';
 import Button from '@/components/common/Button';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
