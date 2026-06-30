@@ -1,1 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+  body {
+    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 shadow-xl;
+  }
+  .glass-card {
+    @apply glass rounded-2xl p-6;
+  }
+}
