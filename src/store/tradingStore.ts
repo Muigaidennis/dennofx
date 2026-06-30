@@ -1,51 +1,77 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { User } from '@/types/user.types';
-import { mockAuthService } from '@/services/mockAuthService';
+import { Trade, Position } from '@/types/trade.types';
 
-interface AuthState {
-  user: User | null;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, displayName: string) => Promise<void>;
-  logout: () => void;
-  setUser: (user: User | null) => void;
+interface TradingState {
+  symbol: string;
+  watchlist: string[];
+  positions: Position[];
+  trades: Trade[];
+  setSymbol: (symbol: string) => void;
+  addToWatchlist: (symbol: string) => void;
+  removeFromWatchlist: (symbol: string) => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      isLoading: false,
-      login: async (email, password) => {
-        set({ isLoading: true });
-        try {
-          const user = await mockAuthService.login(email, password);
-          set({ user, isLoading: false });
-        } catch (error) {
-          set({ isLoading: false });
-          throw error;
-        }
-      },
-      register: async (email, password, displayName) => {
-        set({ isLoading: true });
-        try {
-          const user = await mockAuthService.register(email, password, displayName);
-          set({ user, isLoading: false });
-        } catch (error) {
-          set({ isLoading: false });
-          throw error;
-        }
-      },
-      logout: () => {
-        mockAuthService.logout();
-        set({ user: null });
-      },
-      setUser: (user) => set({ user }),
-    }),
-    {
-      name: 'auth-storage',
-      partialize: (state) => ({ user: state.user }),
-    }
-  )
-);
+// Mock data
+const mockPositions: Position[] = [
+  {
+    id: '1',
+    symbol: 'R_100',
+    type: 'buy',
+    amount: 100,
+    openTime: Date.now() - 60000,
+    status: 'open',
+    currentPrice: 98.5,
+    pnl: 2.5,
+    pnlPercent: 2.5,
+  },
+  {
+    id: '2',
+    symbol: 'R_75',
+    type: 'sell',
+    amount: 50,
+    openTime: Date.now() - 120000,
+    status: 'open',
+    currentPrice: 75.2,
+    pnl: -1.2,
+    pnlPercent: -2.4,
+  },
+];
+
+const mockTrades: Trade[] = [
+  {
+    id: '3',
+    symbol: 'R_100',
+    type: 'buy',
+    amount: 200,
+    openTime: Date.now() - 3600000,
+    closeTime: Date.now() - 1800000,
+    profit: 15.3,
+    status: 'closed',
+  },
+  {
+    id: '4',
+    symbol: 'R_50',
+    type: 'sell',
+    amount: 150,
+    openTime: Date.now() - 7200000,
+    closeTime: Date.now() - 6000000,
+    profit: -8.7,
+    status: 'closed',
+  },
+];
+
+export const useTradingStore = create<TradingState>((set) => ({
+  symbol: 'R_100',
+  watchlist: ['R_100', 'R_75', 'R_50'],
+  positions: mockPositions,
+  trades: mockTrades,
+  setSymbol: (symbol) => set({ symbol }),
+  addToWatchlist: (symbol) =>
+    set((state) => ({
+      watchlist: state.watchlist.includes(symbol) ? state.watchlist : [...state.watchlist, symbol],
+    })),
+  removeFromWatchlist: (symbol) =>
+    set((state) => ({
+      watchlist: state.watchlist.filter((s) => s !== symbol),
+    })),
+}));
